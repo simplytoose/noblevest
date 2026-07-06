@@ -1,0 +1,1628 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>NobleVest — Modernizing the Brokerage Ecosystem</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:ital,wght@0,300;0,400;0,500;0,700;0,800;0,900;1,300;1,700;1,900&display=swap" rel="stylesheet"/>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --blue:#2E21DE;
+  --blue-glow:rgba(46,33,222,.15);
+  --dark:#0B0F1A;
+  --dark2:#070A12;
+  --white:#ffffff;
+  --off:#F0F0EE;
+  --f:'Inter',sans-serif;
+}
+html{overflow-x:hidden}
+body{font-family:var(--f);background:var(--dark2);color:var(--white);overflow-x:hidden;cursor:none}
+
+/* CURSOR */
+#c-dot{position:fixed;width:8px;height:8px;background:var(--blue);border-radius:50%;pointer-events:none;z-index:9999;top:0;left:0;transform:translate(-50%,-50%);transition:width .3s,height .3s;mix-blend-mode:difference}
+#c-ring{position:fixed;width:40px;height:40px;border:1px solid rgba(46,33,222,.5);border-radius:50%;pointer-events:none;z-index:9998;top:0;left:0;transform:translate(-50%,-50%)}
+body.hovering #c-dot{width:16px;height:16px}
+body.hovering #c-ring{width:56px;height:56px;border-color:rgba(46,33,222,.8)}
+
+/* LOADER */
+#loader{
+  position:fixed;inset:0;z-index:9000;
+  background:var(--dark2);
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+}
+.ld-logo{
+  font-size:clamp(32px,6vw,64px);font-weight:900;letter-spacing:-.05em;
+  display:flex;overflow:hidden;
+}
+.ld-char{display:inline-block;transform:translateY(110%)}
+.ld-bar-wrap{width:160px;height:1px;background:rgba(255,255,255,.08);margin-top:56px;overflow:hidden}
+.ld-bar{height:100%;background:var(--blue);width:0}
+.ld-num{font-size:11px;letter-spacing:.12em;color:rgba(255,255,255,.25);margin-top:14px;font-variant-numeric:tabular-nums}
+
+/* NAV */
+#nav{
+  position:fixed;top:0;left:0;right:0;z-index:800;
+  height:64px;display:flex;align-items:center;padding:0 40px;
+  transition:background .5s,border-color .5s;
+  border-bottom:1px solid transparent;
+}
+#nav.scrolled{background:rgba(7,10,18,.92);border-color:rgba(255,255,255,.07);backdrop-filter:blur(20px)}
+.nav-logo{font-size:18px;font-weight:900;letter-spacing:-.04em;color:var(--white);text-decoration:none;cursor:none;margin-right:44px;flex-shrink:0}
+.nav-links{display:flex;gap:2px;flex:1}
+.nav-a{
+  font-size:13px;font-weight:400;color:rgba(255,255,255,.45);
+  padding:0 16px;height:64px;display:flex;align-items:center;cursor:none;
+  transition:color .2s;position:relative;
+}
+.nav-a::after{content:'';position:absolute;bottom:0;left:16px;right:16px;height:1px;background:var(--blue);transform:scaleX(0);transform-origin:left;transition:transform .3s}
+.nav-a:hover{color:var(--white)}.nav-a:hover::after{transform:scaleX(1)}
+.nav-r{display:flex;gap:8px;margin-left:auto}
+.btn-g{font-size:12px;font-weight:500;padding:8px 20px;border:1px solid rgba(255,255,255,.18);color:rgba(255,255,255,.65);background:transparent;cursor:none;transition:all .25s}
+.btn-g:hover{border-color:rgba(255,255,255,.6);color:var(--white)}
+.btn-b{font-size:12px;font-weight:700;padding:9px 22px;background:var(--blue);color:var(--white);border:none;cursor:none;transition:background .25s;letter-spacing:.02em}
+.btn-b:hover{background:#1e14c0}
+
+/* HERO */
+#hero{
+  min-height:100vh;position:relative;overflow:hidden;
+  display:flex;flex-direction:column;justify-content:flex-end;
+  padding:0 40px 72px;background:var(--dark2);
+}
+#hero-cv{position:absolute;inset:0;width:100%;height:100%}
+.hero-in{position:relative;z-index:2}
+.hero-tag{
+  display:inline-flex;align-items:center;gap:10px;
+  font-size:11px;font-weight:600;letter-spacing:.13em;text-transform:uppercase;
+  color:rgba(255,255,255,.35);margin-bottom:28px;
+  overflow:hidden;
+}
+.hero-tag-line{display:block;width:22px;height:1px;background:rgba(255,255,255,.25);transform:scaleX(0);transform-origin:left}
+.hero-tag-txt{display:block;transform:translateY(100%)}
+.hero-h1{
+  font-size:clamp(60px,11vw,128px);font-weight:900;
+  line-height:.9;letter-spacing:-.055em;
+  margin-bottom:0;
+}
+.h1-row{display:block;overflow:hidden}
+.h1-inner{display:block;transform:translateY(115%)}
+.hero-h1 .row2 .h1-inner{font-style:italic;font-weight:300;color:rgba(255,255,255,.45)}
+.hero-bot{display:flex;align-items:flex-end;justify-content:space-between;margin-top:52px;gap:40px;opacity:0}
+.hero-desc{font-size:15px;font-weight:300;color:rgba(255,255,255,.4);max-width:380px;line-height:1.8}
+.hero-btns{display:flex;gap:12px;flex-shrink:0}
+.btn-w{
+  font-size:13px;font-weight:700;padding:14px 32px;
+  background:var(--white);color:var(--dark2);border:none;cursor:none;
+  position:relative;overflow:hidden;transition:color .3s;
+}
+.btn-w::after{content:'';position:absolute;inset:0;background:var(--blue);transform:translateX(-101%);transition:transform .35s cubic-bezier(.4,0,.2,1)}
+.btn-w:hover{color:var(--white)}.btn-w:hover::after{transform:translateX(0)}
+.btn-w span{position:relative;z-index:1}
+.btn-o{font-size:13px;font-weight:400;padding:13px 28px;background:transparent;color:rgba(255,255,255,.55);border:1px solid rgba(255,255,255,.18);cursor:none;transition:all .25s}
+.btn-o:hover{border-color:rgba(255,255,255,.65);color:var(--white)}
+.hero-scroll{display:flex;align-items:center;gap:12px;font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:rgba(255,255,255,.2);padding-bottom:0;position:relative;z-index:2;margin-top:40px;opacity:0}
+.sc-line{width:36px;height:1px;background:rgba(255,255,255,.15);position:relative;overflow:hidden}
+.sc-line::after{content:'';position:absolute;top:0;left:-100%;width:100%;height:100%;background:rgba(255,255,255,.6);animation:scAnim 2s ease-in-out infinite}
+@keyframes scAnim{0%{left:-100%}50%{left:0%}100%{left:100%}}
+
+/* STRIP */
+.strip{background:var(--blue);overflow:hidden;border-top:1px solid rgba(255,255,255,.1);border-bottom:1px solid rgba(255,255,255,.1)}
+.strip-track{display:flex;width:max-content;animation:scrollStrip 28s linear infinite}
+@keyframes scrollStrip{to{transform:translateX(-50%)}}
+.strip-item{display:flex;align-items:center;gap:14px;padding:20px 48px;border-right:1px solid rgba(255,255,255,.12);flex-shrink:0;white-space:nowrap}
+.s-num{font-size:22px;font-weight:800;letter-spacing:-.03em}
+.s-sep{width:4px;height:4px;border-radius:50%;background:rgba(255,255,255,.3)}
+.s-lbl{font-size:11px;font-weight:400;color:rgba(255,255,255,.55);letter-spacing:.07em;text-transform:uppercase}
+
+/* SECTION */
+.sec{padding:120px 40px}
+.si{max-width:1280px;margin:0 auto}
+
+/* INTRO */
+#intro{background:var(--white);color:var(--dark2)}
+.intro-g{display:grid;grid-template-columns:1fr 1fr;gap:80px;align-items:start}
+.intro-lbl{font-size:11px;font-weight:700;letter-spacing:.13em;text-transform:uppercase;color:rgba(0,0,0,.3);margin-bottom:20px;display:flex;align-items:center;gap:10px}
+.intro-lbl::before{content:'';display:block;width:18px;height:1px;background:rgba(0,0,0,.2)}
+.big-h2{font-size:clamp(36px,5vw,64px);font-weight:900;line-height:.92;letter-spacing:-.05em;margin-bottom:28px}
+.body-p{font-size:15px;font-weight:300;color:rgba(0,0,0,.5);line-height:1.8;margin-bottom:24px}
+.al{display:inline-flex;align-items:center;gap:8px;font-size:13px;font-weight:700;color:var(--blue);text-decoration:none;cursor:none;transition:gap .2s}
+.al:hover{gap:14px}
+.intro-list{border-top:1px solid rgba(0,0,0,.07)}
+.irow{
+  display:grid;grid-template-columns:36px 1fr;gap:12px;
+  padding:24px 0;border-bottom:1px solid rgba(0,0,0,.07);
+  cursor:none;position:relative;overflow:hidden;
+}
+.irow::before{content:'';position:absolute;left:0;top:0;bottom:0;width:2px;background:var(--blue);transform:scaleY(0);transform-origin:top;transition:transform .35s}
+.irow:hover::before{transform:scaleY(1)}
+.ir-n{font-size:11px;font-weight:600;color:rgba(0,0,0,.2);letter-spacing:.06em;padding-top:2px}
+.ir-t{font-size:16px;font-weight:700;letter-spacing:-.02em;margin-bottom:5px;transition:color .2s}
+.irow:hover .ir-t{color:var(--blue)}
+.ir-d{font-size:13px;font-weight:300;color:rgba(0,0,0,.4);line-height:1.65}
+
+/* MARQUEE */
+.mq-sec{background:var(--dark);overflow:hidden;border-top:1px solid rgba(255,255,255,.06)}
+.mq-label{text-align:center;padding:36px;font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:rgba(255,255,255,.18)}
+.mq-track{overflow:hidden;border-top:1px solid rgba(255,255,255,.07);border-bottom:1px solid rgba(255,255,255,.07)}
+.mq-inner{display:flex;animation:mq 18s linear infinite;width:max-content}
+@keyframes mq{to{transform:translateX(-50%)}}
+.mq-i{padding:14px 32px;font-size:11px;font-weight:500;color:rgba(255,255,255,.2);border-right:1px solid rgba(255,255,255,.06);letter-spacing:.09em;text-transform:uppercase;white-space:nowrap;flex-shrink:0;transition:color .2s}
+.mq-i:hover{color:rgba(255,255,255,.7)}
+
+/* CLIENTS */
+#clients{background:var(--off);color:var(--dark2)}
+.cl-top{display:flex;align-items:flex-end;justify-content:space-between;margin-bottom:60px;gap:40px}
+.big-h2-dark{font-size:clamp(44px,7vw,88px);font-weight:900;line-height:.88;letter-spacing:-.06em}
+.cl-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1px;background:rgba(0,0,0,.1)}
+.cc{background:var(--off);padding:48px 40px;cursor:none;position:relative;overflow:hidden;transition:background .3s}
+.cc:hover{background:#e5e5e3}
+.cc-bar{position:absolute;bottom:0;left:0;right:0;height:2px;background:var(--blue);transform:scaleX(0);transform-origin:left;transition:transform .4s}
+.cc:hover .cc-bar{transform:scaleX(1)}
+.cc-ico{font-size:24px;margin-bottom:28px;opacity:.6;transition:opacity .2s;display:block}
+.cc:hover .cc-ico{opacity:1}
+.cc-t{font-size:18px;font-weight:800;letter-spacing:-.03em;margin-bottom:10px}
+.cc-d{font-size:13px;font-weight:300;color:rgba(0,0,0,.45);line-height:1.7;margin-bottom:20px}
+.cc-l{font-size:11px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--blue);cursor:none;display:flex;align-items:center;gap:6px;transition:gap .2s}
+.cc:hover .cc-l{gap:11px}
+
+/* SERVICES */
+#services{background:var(--dark2);color:var(--white)}
+.srv-top{display:flex;align-items:flex-end;justify-content:space-between;margin-bottom:60px;gap:40px}
+.srv-sub{font-size:14px;font-weight:300;color:rgba(255,255,255,.3);max-width:280px;line-height:1.8}
+.srv-grid{display:grid;grid-template-columns:1fr 1fr;gap:1px;background:rgba(255,255,255,.07)}
+.srv{background:var(--dark2);padding:56px 48px;cursor:none;position:relative;overflow:hidden;transition:background .3s}
+.srv:hover{background:#0e1220}
+.srv-bar{position:absolute;top:0;left:0;right:0;height:2px;background:var(--blue);transform:scaleX(0);transform-origin:left;transition:transform .45s}
+.srv:hover .srv-bar{transform:scaleX(1)}
+.srv-n{font-size:11px;font-weight:600;letter-spacing:.1em;color:rgba(255,255,255,.15);margin-bottom:24px}
+.srv-t{font-size:28px;font-weight:800;letter-spacing:-.04em;color:var(--white);margin-bottom:16px}
+.srv-d{font-size:14px;font-weight:300;color:rgba(255,255,255,.3);line-height:1.8;max-width:360px}
+.srv-bg-n{position:absolute;right:40px;bottom:24px;font-size:130px;font-weight:900;letter-spacing:-.06em;color:rgba(255,255,255,.02);line-height:1;transition:color .3s;user-select:none}
+.srv:hover .srv-bg-n{color:rgba(46,33,222,.06)}
+
+/* STATEMENT */
+#statement{background:var(--blue);padding:140px 40px;text-align:center;position:relative;overflow:hidden}
+.stmt-ghost{
+  position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);
+  font-size:clamp(100px,18vw,260px);font-weight:900;letter-spacing:-.06em;
+  color:rgba(255,255,255,.04);white-space:nowrap;pointer-events:none;user-select:none;
+}
+.stmt-txt{
+  font-size:clamp(26px,4.5vw,60px);font-weight:700;line-height:1.12;
+  letter-spacing:-.04em;color:var(--white);max-width:960px;margin:0 auto;
+  position:relative;z-index:1;
+}
+.stmt-txt em{font-style:italic;font-weight:300;opacity:.6}
+/* char-split spans */
+.char{display:inline-block;overflow:hidden;line-height:1.2}
+.char-in{display:inline-block}
+
+/* TECH */
+#technology{background:var(--white);color:var(--dark2)}
+.tech-g{display:grid;grid-template-columns:1fr 1fr;gap:80px;align-items:center}
+.tech-vis{background:var(--dark2);aspect-ratio:1;position:relative;overflow:hidden}
+#tc{width:100%;height:100%;display:block}
+.tech-r h2{font-size:clamp(28px,3.5vw,48px);font-weight:900;letter-spacing:-.05em;line-height:.95;margin-bottom:20px}
+.tech-pts{margin-top:36px;border-top:1px solid rgba(0,0,0,.07)}
+.tp{display:flex;gap:16px;padding:20px 0;border-bottom:1px solid rgba(0,0,0,.07);cursor:none;position:relative;overflow:hidden}
+.tp::after{content:'';position:absolute;bottom:0;left:0;width:0;height:1px;background:var(--blue);transition:width .4s}
+.tp:hover::after{width:100%}
+.tp-dot{width:7px;height:7px;border-radius:50%;background:var(--blue);flex-shrink:0;margin-top:7px}
+.tp-t{font-size:15px;font-weight:700;letter-spacing:-.02em;margin-bottom:4px}
+.tp-d{font-size:13px;font-weight:300;color:rgba(0,0,0,.4);line-height:1.65}
+
+/* GLOBE */
+#global{background:var(--dark2);text-align:center;padding:120px 40px}
+.gl-lbl{font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:rgba(255,255,255,.2);margin-bottom:20px;display:flex;align-items:center;justify-content:center;gap:12px}
+.gl-lbl::before,.gl-lbl::after{content:'';display:block;width:20px;height:1px;background:rgba(255,255,255,.15)}
+.globe-h2{font-size:clamp(44px,8vw,96px);font-weight:900;letter-spacing:-.06em;line-height:.88;margin-bottom:16px}
+.globe-sub{font-size:15px;font-weight:300;color:rgba(255,255,255,.3);max-width:400px;margin:0 auto 60px;line-height:1.8}
+.globe-wrap{width:min(540px,90vw);height:min(540px,90vw);margin:0 auto}
+#gc{width:100%;height:100%;display:block;cursor:grab}
+#gc:active{cursor:grabbing}
+.rgns{display:flex;max-width:900px;margin:48px auto 0;border:1px solid rgba(255,255,255,.07)}
+.rgn{flex:1;padding:22px 12px;border-right:1px solid rgba(255,255,255,.07);cursor:none;transition:background .2s}
+.rgn:last-child{border-right:none}
+.rgn:hover{background:rgba(255,255,255,.03)}
+.rgn-n{font-size:13px;font-weight:600;color:var(--white);margin-bottom:4px}
+.rgn-c{font-size:11px;color:rgba(255,255,255,.25);font-weight:300}
+
+/* CONTACT */
+#contact{background:var(--off);color:var(--dark2)}
+.ct-g{display:grid;grid-template-columns:1fr 1fr;gap:80px}
+.ct-h2{font-size:clamp(32px,4vw,56px);font-weight:900;letter-spacing:-.05em;line-height:.95;margin-bottom:20px}
+.ct-p{font-size:15px;font-weight:300;color:rgba(0,0,0,.45);line-height:1.8;margin-bottom:40px}
+.ct-info{display:flex;flex-direction:column;gap:24px}
+.ci-l{font-size:10px;font-weight:700;letter-spacing:.13em;text-transform:uppercase;color:rgba(0,0,0,.3);margin-bottom:4px}
+.ci-v{font-size:14px;color:var(--dark2);line-height:1.6;font-weight:400}
+.cf{display:flex;flex-direction:column}
+.cff{border:1px solid rgba(0,0,0,.1);display:flex;flex-direction:column;margin:-.5px;transition:border-color .2s}
+.cff:focus-within{border-color:var(--blue);z-index:1;position:relative}
+.cff label{font-size:10px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:rgba(0,0,0,.3);padding:14px 18px 4px}
+.cff input,.cff select,.cff textarea{background:transparent;border:none;outline:none;font-family:var(--f);font-size:14px;font-weight:400;color:var(--dark2);padding:4px 18px 14px;cursor:none;resize:none}
+.cff select option{background:var(--white)}
+.cf-row{display:grid;grid-template-columns:1fr 1fr}
+.cfb{border:1px solid rgba(0,0,0,.1);border-top:none}
+.cfb button{width:100%;padding:18px;background:var(--blue);color:var(--white);border:none;font-family:var(--f);font-size:13px;font-weight:700;letter-spacing:.04em;cursor:none;transition:background .25s}
+.cfb button:hover{background:#1e14c0}
+.cf-ok{display:none;text-align:center;padding:28px;font-size:14px;color:var(--blue);font-weight:600}
+
+/* FOOTER */
+footer{background:var(--dark2);padding:80px 40px 40px;border-top:1px solid rgba(255,255,255,.06)}
+.ft{display:grid;grid-template-columns:2fr 1fr 1fr 1fr 1fr;gap:48px;margin-bottom:64px;padding-bottom:64px;border-bottom:1px solid rgba(255,255,255,.06)}
+.f-logo{font-size:22px;font-weight:900;letter-spacing:-.04em;color:var(--white);margin-bottom:14px}
+.f-ab{font-size:13px;font-weight:300;color:rgba(255,255,255,.25);line-height:1.7;max-width:230px;margin-bottom:28px}
+.f-soc{display:flex;gap:8px}
+.fsoc{width:34px;height:34px;border:1px solid rgba(255,255,255,.1);display:flex;align-items:center;justify-content:center;font-size:12px;color:rgba(255,255,255,.3);text-decoration:none;cursor:none;transition:all .2s}
+.fsoc:hover{border-color:rgba(255,255,255,.5);color:var(--white)}
+.fc h4{font-size:10px;font-weight:700;letter-spacing:.13em;text-transform:uppercase;color:rgba(255,255,255,.2);margin-bottom:18px}
+.fc ul{list-style:none;display:flex;flex-direction:column;gap:11px}
+.fc ul li a{font-size:13px;font-weight:300;color:rgba(255,255,255,.4);text-decoration:none;cursor:none;transition:color .2s}
+.fc ul li a:hover{color:var(--white)}
+.fb{display:flex;align-items:center;justify-content:space-between;gap:24px;flex-wrap:wrap}
+.fc-copy{font-size:12px;font-weight:300;color:rgba(255,255,255,.18)}
+.fl{display:flex;gap:20px}
+.fl a{font-size:12px;font-weight:300;color:rgba(255,255,255,.18);text-decoration:none;cursor:none;transition:color .2s}
+.fl a:hover{color:rgba(255,255,255,.55)}
+
+/* AUTH */
+.modal-bg{display:none;position:fixed;inset:0;background:rgba(7,10,18,.8);z-index:2000;align-items:center;justify-content:center;backdrop-filter:blur(10px)}
+.modal-bg.open{display:flex}
+.mbox{background:var(--white);width:100%;max-width:450px;position:relative}
+.mstrip{height:3px;background:var(--blue)}
+.mhead{padding:34px 34px 0;display:flex;align-items:start;justify-content:space-between}
+.mhead h2{font-size:24px;font-weight:900;letter-spacing:-.04em;color:var(--dark2)}
+.mx{background:none;border:none;font-size:22px;color:rgba(0,0,0,.25);cursor:none;line-height:1;transition:color .2s}
+.mx:hover{color:var(--dark2)}
+.mtabs{display:flex;margin:18px 34px 0;border-bottom:1px solid rgba(0,0,0,.08)}
+.mt{padding:9px 0;margin-right:22px;font-size:13px;font-weight:500;color:rgba(0,0,0,.3);border-bottom:2px solid transparent;margin-bottom:-1px;cursor:none;transition:all .2s}
+.mt.on{color:var(--blue);border-bottom-color:var(--blue)}
+.mbody{padding:26px 34px 34px}
+.mff{border:1px solid rgba(0,0,0,.1);display:flex;flex-direction:column;margin:-.5px;transition:border-color .2s}
+.mff:focus-within{border-color:var(--blue);z-index:1;position:relative}
+.mrow{display:flex}.mrow .mff{flex:1}
+.mff label{font-size:10px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:rgba(0,0,0,.3);padding:12px 14px 4px}
+.mff input{background:transparent;border:none;outline:none;font-family:var(--f);font-size:14px;color:var(--dark2);padding:4px 14px 12px;cursor:none}
+.merr{font-size:12px;color:#dc2626;margin:8px 0 0;display:none}
+.mbtn{width:100%;border:1px solid rgba(0,0,0,.1);border-top:none;padding:16px;background:var(--blue);color:var(--white);font-family:var(--f);font-size:13px;font-weight:700;letter-spacing:.04em;cursor:none;transition:background .25s}
+.mbtn:hover{background:#1e14c0}
+.mhint{text-align:center;font-size:12px;color:rgba(0,0,0,.3);margin-top:12px}
+
+/* DASHBOARD */
+.dash{display:none;position:fixed;inset:0;background:var(--off);z-index:1500;overflow-y:auto}
+.dash.open{display:block}
+.dbar{position:sticky;top:0;z-index:10;background:var(--white);border-bottom:1px solid rgba(0,0,0,.07);display:flex;align-items:center;justify-content:space-between;padding:0 40px;height:60px}
+.dlogo{font-size:16px;font-weight:900;letter-spacing:-.04em;color:var(--dark2)}
+.dlogo span{color:var(--blue)}
+.dnav{display:flex}
+.dnav a{font-size:13px;font-weight:400;color:rgba(0,0,0,.38);padding:0 18px;height:60px;display:flex;align-items:center;text-decoration:none;cursor:none;border-bottom:2px solid transparent;transition:all .2s}
+.dnav a.on,.dnav a:hover{color:var(--dark2);border-bottom-color:var(--blue)}
+.duser{display:flex;align-items:center;gap:12px}
+.dav{width:30px;height:30px;border-radius:50%;background:var(--blue);color:var(--white);font-size:12px;font-weight:700;display:flex;align-items:center;justify-content:center}
+.dnm{font-size:13px;font-weight:500;color:var(--dark2)}
+.dout{background:none;border:none;font-size:12px;font-weight:500;color:rgba(0,0,0,.3);cursor:none;transition:color .2s}
+.dout:hover{color:var(--dark2)}
+.dbody{padding:48px 40px;max-width:1400px;margin:0 auto}
+.dhello{margin-bottom:40px}
+.dhello h1{font-size:clamp(24px,3vw,36px);font-weight:900;letter-spacing:-.04em;margin-bottom:6px}
+.dhello p{font-size:14px;color:rgba(0,0,0,.38);font-weight:300}
+.kgrid{display:grid;grid-template-columns:repeat(4,1fr);gap:1px;background:rgba(0,0,0,.07);margin-bottom:24px}
+.kcard{background:var(--white);padding:28px 24px}
+.kl{font-size:10px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:rgba(0,0,0,.3);margin-bottom:10px}
+.kv{font-size:clamp(22px,2vw,30px);font-weight:900;letter-spacing:-.04em;color:var(--dark2);margin-bottom:4px}
+.kc{font-size:12px;font-weight:600}
+.kc.g{color:#16a34a}.kc.r{color:#dc2626}.kc.n{color:rgba(0,0,0,.28)}
+.dpanels{display:grid;grid-template-columns:2fr 1fr;gap:1px;background:rgba(0,0,0,.07);margin-bottom:24px}
+.dp{background:var(--white);padding:28px 24px}
+.dpt{font-size:10px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:rgba(0,0,0,.28);margin-bottom:20px}
+.chart-area{height:180px}
+.pm-row{display:flex;gap:28px;margin-top:16px;padding-top:16px;border-top:1px solid rgba(0,0,0,.05)}
+.pm .pm-l{font-size:10px;text-transform:uppercase;letter-spacing:.08em;color:rgba(0,0,0,.3);font-weight:600;margin-bottom:2px}
+.pm .pm-v{font-size:18px;font-weight:900;letter-spacing:-.03em}
+.pm .pm-v.g{color:#16a34a}
+.da{display:flex;flex-direction:column;align-items:center}
+.al{width:100%;display:flex;flex-direction:column;gap:8px;margin-top:16px}
+.ar{display:flex;align-items:center;justify-content:space-between;font-size:12px}
+.adot{width:8px;height:8px;border-radius:50%;margin-right:8px;flex-shrink:0}
+.an{display:flex;align-items:center;color:rgba(0,0,0,.5);font-weight:300}
+.ap{font-weight:800;color:var(--dark2)}
+.pp{background:var(--white);padding:28px 24px;border-top:1px solid rgba(0,0,0,.05)}
+.ptb{width:100%;border-collapse:collapse}
+.ptb th{font-size:10px;letter-spacing:.1em;text-transform:uppercase;color:rgba(0,0,0,.28);font-weight:700;padding:8px 10px;border-bottom:1px solid rgba(0,0,0,.06);text-align:left}
+.ptb td{padding:12px 10px;font-size:13px;border-bottom:1px solid rgba(0,0,0,.04)}
+.ptb tr:last-child td{border-bottom:none}
+.ptb tr:hover td{background:rgba(46,33,222,.02)}
+.ts{font-weight:900;letter-spacing:-.02em;font-size:14px}
+.tc{font-size:11px;color:rgba(0,0,0,.32);font-weight:300;margin-top:1px}
+.g{color:#16a34a;font-weight:700}.r{color:#dc2626;font-weight:700}
+
+/* REVEAL */
+.rv{opacity:0;transform:translateY(36px);transition:opacity .85s cubic-bezier(.16,1,.3,1),transform .85s cubic-bezier(.16,1,.3,1)}
+.rv.in{opacity:1;transform:translateY(0)}
+.rv[data-d="1"]{transition-delay:.1s}.rv[data-d="2"]{transition-delay:.2s}.rv[data-d="3"]{transition-delay:.3s}.rv[data-d="4"]{transition-delay:.4s}.rv[data-d="5"]{transition-delay:.5s}
+
+/* SPLIT TEXT */
+.split-line{display:block;overflow:hidden}
+.split-word{display:inline-block;overflow:hidden;margin-right:.25em}
+.split-word .wi{display:inline-block;transform:translateY(105%)}
+
+@media(max-width:960px){
+  #nav{padding:0 20px}.nav-links,.btn-g{display:none}
+  #hero,.sec,footer{padding-left:20px;padding-right:20px}
+  .intro-g,.tech-g,.ct-g{grid-template-columns:1fr;gap:48px}
+  .cl-grid{grid-template-columns:1fr 1fr}
+  .srv-grid,.kgrid,.dpanels{grid-template-columns:1fr}
+  .ft{grid-template-columns:1fr 1fr;gap:32px}
+  .hero-bot{flex-direction:column;align-items:flex-start}
+  .rgns{max-width:100%;flex-wrap:wrap}
+  .dbody{padding:24px 20px}.dbar{padding:0 20px}
+}
+@media(max-width:600px){.cl-grid{grid-template-columns:1fr}.kgrid{grid-template-columns:1fr 1fr}}
+</style>
+</head>
+<body>
+
+<!-- CURSOR -->
+<div id="c-dot"></div>
+<div id="c-ring"></div>
+
+<!-- LOADER -->
+<div id="loader">
+  <div class="ld-logo" id="ldLogo">
+    <span class="ld-char">N</span><span class="ld-char">o</span><span class="ld-char">b</span>
+    <span class="ld-char">l</span><span class="ld-char">e</span><span class="ld-char">V</span>
+    <span class="ld-char">e</span><span class="ld-char">s</span><span class="ld-char">t</span>
+  </div>
+  <div class="ld-bar-wrap"><div class="ld-bar" id="ldBar"></div></div>
+  <div class="ld-num" id="ldNum">0%</div>
+</div>
+
+<!-- NAV -->
+<nav id="nav">
+  <a class="nav-logo" href="#">NobleVest</a>
+  <div class="nav-links">
+    <div class="nav-a" onclick="go('intro')">Studio</div>
+    <div class="nav-a" onclick="go('clients')">Clients</div>
+    <div class="nav-a" onclick="go('services')">Services</div>
+    <div class="nav-a" onclick="go('technology')">Company</div>
+    <div class="nav-a" onclick="go('global')">Insights</div>
+  </div>
+  <div class="nav-r">
+    <button class="btn-g" onclick="openAuth('login')">Login</button>
+    <button class="btn-b" onclick="go('contact')">Get in touch</button>
+  </div>
+</nav>
+
+<!-- HERO -->
+<section id="hero">
+  <canvas id="hero-cv"></canvas>
+  <div class="hero-in">
+    <div class="hero-tag">
+      <span class="hero-tag-line"></span>
+      <span class="hero-tag-txt">Speed, Transparency and Scale for Sophisticated Investors™</span>
+    </div>
+    <h1 class="hero-h1">
+      <span class="h1-row row1"><span class="h1-inner">Modernizing</span></span>
+      <span class="h1-row row2"><span class="h1-inner">the brokerage</span></span>
+      <span class="h1-row row3"><span class="h1-inner">ecosystem</span></span>
+    </h1>
+    <div class="hero-bot">
+      <p class="hero-desc">With $2.4 billion in capital raised from some of the most prominent investors, the NobleVest platform services 1,200+ institutional clients and supports ~$32 billion in customer balances.</p>
+      <div class="hero-btns">
+        <button class="btn-w" onclick="openAuth('register')"><span>Open an account</span></button>
+        <button class="btn-o" onclick="go('contact')">Get in touch</button>
+      </div>
+    </div>
+    <div class="hero-scroll"><div class="sc-line"></div>Scroll to explore</div>
+  </div>
+</section>
+
+<!-- STRIP -->
+<div class="strip">
+  <div class="strip-track" id="stripTrack">
+    <div class="strip-item"><span class="s-num">1,200+</span><div class="s-sep"></div><span class="s-lbl">Institutional clients</span></div>
+    <div class="strip-item"><span class="s-num">~$32bn</span><div class="s-sep"></div><span class="s-lbl">Customer balances</span></div>
+    <div class="strip-item"><span class="s-num">~1.1bn</span><div class="s-sep"></div><span class="s-lbl">Shares / day</span></div>
+    <div class="strip-item"><span class="s-num">~$56bn</span><div class="s-sep"></div><span class="s-lbl">Notional / day</span></div>
+    <div class="strip-item"><span class="s-num">124% YoY</span><div class="s-sep"></div><span class="s-lbl">Transacted growth</span></div>
+    <div class="strip-item"><span class="s-num">$2.4bn</span><div class="s-sep"></div><span class="s-lbl">Capital raised</span></div>
+    <div class="strip-item"><span class="s-num">1,400+</span><div class="s-sep"></div><span class="s-lbl">Employees worldwide</span></div>
+    <div class="strip-item"><span class="s-num">1,200+</span><div class="s-sep"></div><span class="s-lbl">Institutional clients</span></div>
+    <div class="strip-item"><span class="s-num">~$32bn</span><div class="s-sep"></div><span class="s-lbl">Customer balances</span></div>
+    <div class="strip-item"><span class="s-num">~1.1bn</span><div class="s-sep"></div><span class="s-lbl">Shares / day</span></div>
+    <div class="strip-item"><span class="s-num">~$56bn</span><div class="s-sep"></div><span class="s-lbl">Notional / day</span></div>
+    <div class="strip-item"><span class="s-num">124% YoY</span><div class="s-sep"></div><span class="s-lbl">Transacted growth</span></div>
+    <div class="strip-item"><span class="s-num">$2.4bn</span><div class="s-sep"></div><span class="s-lbl">Capital raised</span></div>
+    <div class="strip-item"><span class="s-num">1,400+</span><div class="s-sep"></div><span class="s-lbl">Employees worldwide</span></div>
+  </div>
+</div>
+
+<!-- INTRO -->
+<section id="intro" class="sec">
+  <div class="si">
+    <div class="intro-g">
+      <div class="rv">
+        <div class="intro-lbl">Who we are</div>
+        <h2 class="big-h2">Sophisticated investors trust NobleVest</h2>
+        <p class="body-p">Sophisticated, individual traders to large institutions, brokers and banks, to ETF issuers and C-suites at corporate issuers, across the global capital markets, all depend on NobleVest.</p>
+        <p class="body-p">NobleVest is putting market participants on modern infrastructure, minimizing risk and facilitating growth for our clients with our real-time, cloud-native platform.</p>
+        <a class="al" href="#">Explore our clients →</a>
+      </div>
+      <div class="intro-list rv" data-d="2">
+        <div class="irow"><div class="ir-n">01</div><div><div class="ir-t">Built for Multi-Asset Clearing</div><div class="ir-d">One platform for all asset classes with real-time data and risk management held in a single system.</div></div></div>
+        <div class="irow"><div class="ir-n">02</div><div><div class="ir-t">Designed for the Future</div><div class="ir-d">Cloud-native, API-based, AI-enhanced with horizontally scalable technology and cost-effective maintenance.</div></div></div>
+        <div class="irow"><div class="ir-n">03</div><div><div class="ir-t">Global Market Access</div><div class="ir-d">Access to 60+ clearing venues across North America, Europe, Asia Pacific and the Middle East.</div></div></div>
+        <div class="irow"><div class="ir-n">04</div><div><div class="ir-t">Real-Time Risk Management</div><div class="ir-d">Comprehensive risk and margin monitoring, exposure tracking and analytics — live, always.</div></div></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- MARQUEE -->
+<div class="mq-sec">
+  <div class="mq-label">Global Clearing Partners</div>
+  <div class="mq-track">
+    <div class="mq-inner">
+      <div class="mq-i">NYSE</div><div class="mq-i">NASDAQ</div><div class="mq-i">CME Group</div><div class="mq-i">ICE</div><div class="mq-i">Cboe</div><div class="mq-i">EUREX</div><div class="mq-i">LSE</div><div class="mq-i">ASX Clear</div><div class="mq-i">HKEX</div><div class="mq-i">JPX</div><div class="mq-i">B3</div><div class="mq-i">SGX</div><div class="mq-i">LME</div><div class="mq-i">Coinbase</div><div class="mq-i">ICE Clear EU</div><div class="mq-i">ECC</div><div class="mq-i">BOX Exchange</div><div class="mq-i">TOCOM</div>
+      <div class="mq-i">NYSE</div><div class="mq-i">NASDAQ</div><div class="mq-i">CME Group</div><div class="mq-i">ICE</div><div class="mq-i">Cboe</div><div class="mq-i">EUREX</div><div class="mq-i">LSE</div><div class="mq-i">ASX Clear</div><div class="mq-i">HKEX</div><div class="mq-i">JPX</div><div class="mq-i">B3</div><div class="mq-i">SGX</div><div class="mq-i">LME</div><div class="mq-i">Coinbase</div><div class="mq-i">ICE Clear EU</div><div class="mq-i">ECC</div><div class="mq-i">BOX Exchange</div><div class="mq-i">TOCOM</div>
+    </div>
+  </div>
+</div>
+
+<!-- CLIENTS -->
+<section id="clients" class="sec">
+  <div class="si">
+    <div class="cl-top">
+      <h2 class="big-h2-dark rv" id="clH">Who<br>NobleVest<br>serves</h2>
+      <a class="al rv" data-d="2" href="#">View all clients →</a>
+    </div>
+    <div class="cl-grid">
+      <div class="cc rv"><span class="cc-ico">◈</span><div class="cc-t">Traders</div><div class="cc-d">Individual sophisticated traders seeking institutional-grade execution technology and infrastructure.</div><div class="cc-l">Learn more →</div><div class="cc-bar"></div></div>
+      <div class="cc rv" data-d="1"><span class="cc-ico">◇</span><div class="cc-t">Family Offices</div><div class="cc-d">Single and multi-family offices managing complex, multi-generational portfolios with privacy and efficiency.</div><div class="cc-l">Learn more →</div><div class="cc-bar"></div></div>
+      <div class="cc rv" data-d="2"><span class="cc-ico">△</span><div class="cc-t">Hedge Funds</div><div class="cc-d">Multi-strategy and quantitative funds requiring real-time risk management and prime brokerage services.</div><div class="cc-l">Learn more →</div><div class="cc-bar"></div></div>
+      <div class="cc rv" data-d="1"><span class="cc-ico">○</span><div class="cc-t">ETF Issuers</div><div class="cc-d">Fund managers creating and distributing exchange-traded products across global markets.</div><div class="cc-l">Learn more →</div><div class="cc-bar"></div></div>
+      <div class="cc rv" data-d="2"><span class="cc-ico">□</span><div class="cc-t">Broker-Dealers</div><div class="cc-d">Registered broker-dealers seeking modern clearing, settlement and technology infrastructure.</div><div class="cc-l">Learn more →</div><div class="cc-bar"></div></div>
+      <div class="cc rv" data-d="3"><span class="cc-ico">✦</span><div class="cc-t">Asset Managers</div><div class="cc-d">Traditional and alternative asset managers demanding transparent, scalable portfolio solutions.</div><div class="cc-l">Learn more →</div><div class="cc-bar"></div></div>
+    </div>
+  </div>
+</section>
+
+<!-- SERVICES -->
+<section id="services" class="sec">
+  <div class="si">
+    <div class="srv-top">
+      <h2 class="big-h2 rv" style="color:var(--white)" id="srvH">Our<br>services</h2>
+      <p class="srv-sub rv" data-d="2">A technology-driven platform designed for today's complex, global market — minimizing risk, facilitating growth.</p>
+    </div>
+    <div class="srv-grid">
+      <div class="srv rv"><div class="srv-bar"></div><div class="srv-n">01</div><div class="srv-t">Clearing</div><div class="srv-d">One platform for all asset classes. Real-time data and risk management held in a single modern system — replacing 50-year-old COBOL mainframes.</div><div class="srv-bg-n">01</div></div>
+      <div class="srv rv" data-d="1"><div class="srv-bar"></div><div class="srv-n">02</div><div class="srv-t">Financing</div><div class="srv-d">Prime brokerage financing with competitive margin rates, securities lending programs and repo solutions for institutions of every size.</div><div class="srv-bg-n">02</div></div>
+      <div class="srv rv" data-d="1"><div class="srv-bar"></div><div class="srv-n">03</div><div class="srv-t">Execution & Trading</div><div class="srv-d">Smart order routing and algorithmic execution across equities, options, futures and digital assets with direct market access to 60+ global venues.</div><div class="srv-bg-n">03</div></div>
+      <div class="srv rv" data-d="2"><div class="srv-bar"></div><div class="srv-n">04</div><div class="srv-t">Investment Banking</div><div class="srv-d">Capital markets advisory, equity and debt underwriting, and M&A services for growth-stage companies and established institutions alike.</div><div class="srv-bg-n">04</div></div>
+    </div>
+  </div>
+</section>
+
+<!-- STATEMENT -->
+<section id="statement">
+  <div class="stmt-ghost">NOBLEVEST</div>
+  <div class="stmt-txt rv" id="stmtTxt">
+    The financial industry still operates on<br>
+    <em>outdated infrastructure built in the 1970s.</em><br>
+    NobleVest is replacing it.
+  </div>
+</section>
+
+<!-- TECHNOLOGY -->
+<section id="technology" class="sec">
+  <div class="si">
+    <div class="tech-g">
+      <div class="tech-vis rv">
+        <canvas id="tc"></canvas>
+      </div>
+      <div class="tech-r rv" data-d="2">
+        <div class="intro-lbl" style="color:rgba(0,0,0,.3)">The platform</div>
+        <h2>A technology-driven platform designed for today's market</h2>
+        <p class="body-p">NobleVest is built from the ground up on modern cloud infrastructure. Every component is designed to be scalable, resilient, and future-ready.</p>
+        <div class="tech-pts">
+          <div class="tp"><div class="tp-dot"></div><div><div class="tp-t">Cloud-native, API-based, AI-enhanced</div><div class="tp-d">Horizontally scalable and cost-effective to maintain at any volume.</div></div></div>
+          <div class="tp"><div class="tp-dot"></div><div><div class="tp-t">Real-time data and risk management</div><div class="tp-d">All information in a single system with live updates across risk, margin and P&L.</div></div></div>
+          <div class="tp"><div class="tp-dot"></div><div><div class="tp-t">Multi-asset in a single platform</div><div class="tp-d">Equities, fixed income, options, futures and digital assets — unified.</div></div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- GLOBE -->
+<section id="global">
+  <div class="gl-lbl">Global reach</div>
+  <p class="globe-sub rv" data-d="1">NobleVest's mission is to give every sophisticated investor access to every asset, in every market.</p>
+  <div class="globe-wrap"><canvas id="gc"></canvas></div>
+  <div class="rgns rv">
+    <div class="rgn"><div class="rgn-n">North America</div><div class="rgn-c">40+ venues</div></div>
+    <div class="rgn"><div class="rgn-n">Europe</div><div class="rgn-c">20+ venues</div></div>
+    <div class="rgn"><div class="rgn-n">Asia Pacific</div><div class="rgn-c">10+ venues</div></div>
+    <div class="rgn"><div class="rgn-n">Middle East</div><div class="rgn-c">8+ venues</div></div>
+    <div class="rgn"><div class="rgn-n">Latin America</div><div class="rgn-c">Coming soon</div></div>
+    <div class="rgn"><div class="rgn-n">Africa</div><div class="rgn-c">Coming soon</div></div>
+  </div>
+</section>
+
+<!-- CONTACT -->
+<section id="contact" class="sec">
+  <div class="si">
+    <div class="ct-g">
+      <div class="rv">
+        <div class="intro-lbl" style="color:rgba(0,0,0,.3)">Get in touch</div>
+        <h2 class="ct-h2">Get in touch<br>with our team</h2>
+        <p class="ct-p">Whether you're a hedge fund, family office or individual trader — our team is ready to find the right solution for your needs.</p>
+        <div class="ct-info">
+          <div><div class="ci-l">Headquarters</div><div class="ci-v">4 World Trade Center<br>150 Greenwich St, Floor 45<br>New York, NY 10007</div></div>
+          <div><div class="ci-l">Phone</div><div class="ci-v">+1 (646) 900-0001</div></div>
+          <div><div class="ci-l">Email</div><div class="ci-v">contact@noblevest.com</div></div>
+        </div>
+      </div>
+      <div class="rv" data-d="2">
+        <form onsubmit="submitCt(event)" id="ctf">
+          <div class="cf-row">
+            <div class="cff"><label>First Name</label><input type="text" id="c_fname" placeholder="John" required/></div>
+            <div class="cff" style="border-left:none"><label>Last Name</label><input type="text" id="c_lname" placeholder="Smith" required/></div>
+          </div>
+          <div class="cff" style="border-top:none"><label>Email</label><input type="email" id="c_email" placeholder="john@fund.com" required/></div>
+          <div class="cff" style="border-top:none"><label>Company</label><input type="text" id="c_company" placeholder="Acme Capital LP"/></div>
+          <div class="cff" style="border-top:none"><label>I am a</label><select id="c_type"><option value="hedge_fund">Hedge Fund</option><option value="family_office">Family Office</option><option value="broker_dealer">Broker-Dealer</option><option value="etf_issuer">ETF Issuer</option><option value="trader">Individual Trader</option><option value="asset_manager">Asset Manager</option></select></div>
+          <div class="cff" style="border-top:none"><label>Message</label><textarea id="c_msg" rows="4" style="padding:12px 18px 14px" placeholder="Tell us about your needs..."></textarea></div>
+          <div class="cfb"><button type="submit">Send message →</button></div>
+          <div class="cf-ok" id="cfok">✓ Message received. Our team will be in touch within 24 hours.</div>
+        </form>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div class="ft">
+    <div><div class="f-logo">NobleVest</div><div class="f-ab">Modernizing the brokerage ecosystem. Cloud-native, API-first infrastructure for the world's most sophisticated market participants.</div><div class="f-soc"><a class="fsoc" href="#">in</a><a class="fsoc" href="#">yt</a><a class="fsoc" href="#">gh</a></div></div>
+    <div class="fc"><h4>Clients</h4><ul><li><a href="#">Traders</a></li><li><a href="#">Family Offices</a></li><li><a href="#">Hedge Funds</a></li><li><a href="#">ETF Issuers</a></li><li><a href="#">Broker-Dealers</a></li></ul></div>
+    <div class="fc"><h4>Services</h4><ul><li><a href="#">Overview</a></li><li><a href="#">Clearing</a></li><li><a href="#">Financing</a></li><li><a href="#">Execution</a></li><li><a href="#">Investment Banking</a></li></ul></div>
+    <div class="fc"><h4>Company</h4><ul><li><a href="#">About</a></li><li><a href="#">Careers</a></li><li><a href="#">Insights</a></li><li><a href="#">NobleVest Studio</a></li></ul></div>
+    <div class="fc"><h4>Legal</h4><ul><li><a href="#">Regulatory Disclosures</a></li><li><a href="#">Privacy Notice</a></li><li><a href="#">Security</a></li></ul></div>
+  </div>
+  <div class="fb">
+    <div class="fc-copy">Copyright © 2026 NobleVest LLC. All rights reserved. Member FINRA and SIPC.</div>
+    <div class="fl"><a href="#">Regulatory Disclosures</a><a href="#">Privacy Notice</a><a href="#">Security</a></div>
+  </div>
+</footer>
+
+<!-- AUTH -->
+<div class="modal-bg" id="authM">
+  <div class="mbox">
+    <div class="mstrip"></div>
+    <div class="mhead"><h2 id="mTit">Welcome back</h2><button class="mx" onclick="closeAuth()">×</button></div>
+    <div class="mtabs"><div class="mt on" id="tL" onclick="sw('login')">Login</div><div class="mt" id="tR" onclick="sw('register')">Register</div></div>
+    <div class="mbody">
+      <div id="fL">
+        <div class="mff"><label>Email</label><input type="email" id="lE" placeholder="you@fund.com"/></div>
+        <div class="mff" style="border-top:none"><label>Password</label><input type="password" id="lP" placeholder="••••••••"/></div>
+        <div class="merr" id="lErr">Please enter email and password.</div>
+        <button class="mbtn" onclick="doLogin()">Sign in →</button>
+        <div class="mhint">Demo: enter any email + any password</div>
+      </div>
+      <div id="fR" style="display:none">
+        <div class="mrow"><div class="mff"><label>First Name</label><input type="text" id="rF" placeholder="John"/></div><div class="mff" style="border-left:none"><label>Last Name</label><input type="text" id="rL" placeholder="Smith"/></div></div>
+        <div class="mff" style="border-top:none"><label>Email</label><input type="email" id="rE" placeholder="you@fund.com"/></div>
+        <div class="mff" style="border-top:none"><label>Password</label><input type="password" id="rP" placeholder="Min. 8 characters"/></div>
+        <div class="merr" id="rErr">Please fill all fields.</div>
+        <button class="mbtn" onclick="doReg()">Create account →</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- DASHBOARD -->
+<div class="dash" id="dash">
+  <div class="dbar">
+    <div style="display:flex;align-items:center">
+      <div class="dlogo">Noble<span>Vest</span></div>
+      <nav class="dnav" style="margin-left:32px">
+        <a href="#" class="on">Portfolio</a><a href="#">Markets</a><a href="#">Analytics</a><a href="#">Reports</a>
+      </nav>
+    </div>
+    <div class="duser"><div class="dav" id="dAv">J</div><span class="dnm" id="dNm">Investor</span><button class="dout" onclick="logout()">Sign out</button></div>
+  </div>
+  <div class="dbody">
+    <div class="dhello"><h1>Good morning, <span id="dGr">Investor</span> 👋</h1><p>Portfolio overview — Live connection active</p></div>
+    <div class="kgrid">
+      <div class="kcard"><div class="kl">Total Portfolio Value</div><div class="kv" id="d_total_value">$1,000,000.00</div><div class="kc g" id="d_day_pnl_text">▲ +$0.00 today (+0.00%)</div></div>
+      <div class="kcard"><div class="kl">Unrealized P&L</div><div class="kv" id="d_unrealized_pnl">$0.00</div><div class="kc g" id="d_unrealized_pnl_pct">▲ +0.0% since inception</div></div>
+      <div class="kcard"><div class="kl">Today's P&L</div><div class="kv" id="d_day_pnl">$0.00</div><div class="kc g" id="d_day_pnl_pct">▲ +0.0%</div></div>
+      <div class="kcard"><div class="kl">Cash Available</div><div class="kv" id="d_cash_balance">$1,000,000.00</div><div class="kc n">Buying power: $2M</div></div>
+    </div>
+    <div class="dpanels">
+      <div class="dp">
+        <div class="dpt">Portfolio Performance — 12 Months</div>
+        <div class="chart-area" id="d_chart_area">
+          <svg style="width:100%;height:100%" viewBox="0 0 620 180" preserveAspectRatio="none" id="d_chart_svg">
+            <defs><linearGradient id="cg" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#2E21DE" stop-opacity=".15"/><stop offset="100%" stop-color="#2E21DE" stop-opacity="0"/></linearGradient></defs>
+            <line x1="0" y1="45" x2="620" y2="45" stroke="rgba(0,0,0,.04)" stroke-width="1"/>
+            <line x1="0" y1="90" x2="620" y2="90" stroke="rgba(0,0,0,.04)" stroke-width="1"/>
+            <line x1="0" y1="135" x2="620" y2="135" stroke="rgba(0,0,0,.04)" stroke-width="1"/>
+            <path id="d_chart_line" d="M0,160 C40,155 80,148 130,132 S190,118 240,105 S300,90 350,75 S420,52 470,40 S540,24 580,16 L620,12" fill="none" stroke="#2E21DE" stroke-width="2.5" stroke-linecap="round"/>
+            <path id="d_chart_grad" d="M0,160 C40,155 80,148 130,132 S190,118 240,105 S300,90 350,75 S420,52 470,40 S540,24 580,16 L620,12 L620,180 L0,180Z" fill="url(#cg)"/>
+            <text x="2" y="175" fill="rgba(0,0,0,.22)" font-size="10" font-family="Inter">Jul</text>
+            <text x="88" y="175" fill="rgba(0,0,0,.22)" font-size="10" font-family="Inter">Sep</text>
+            <text x="178" y="175" fill="rgba(0,0,0,.22)" font-size="10" font-family="Inter">Nov</text>
+            <text x="265" y="175" fill="rgba(0,0,0,.22)" font-size="10" font-family="Inter">Jan</text>
+            <text x="354" y="175" fill="rgba(0,0,0,.22)" font-size="10" font-family="Inter">Mar</text>
+            <text x="442" y="175" fill="rgba(0,0,0,.22)" font-size="10" font-family="Inter">May</text>
+          </svg>
+        </div>
+        <div class="pm-row">
+          <div class="pm"><div class="pm-l">Volatility (Ann)</div><div class="pm-v" id="d_vol">0.00%</div></div>
+          <div class="pm"><div class="pm-l">VaR 95%</div><div class="pm-v" id="d_var">$0</div></div>
+          <div class="pm"><div class="pm-l">Sortino</div><div class="pm-v" id="d_sortino">0.00</div></div>
+          <div class="pm"><div class="pm-l">Sharpe</div><div class="pm-v" id="d_sharpe">0.00</div></div>
+          <div class="pm"><div class="pm-l">Beta</div><div class="pm-v" id="d_beta">0.00</div></div>
+        </div>
+      </div>
+      <div class="dp">
+        <div class="dpt">Allocation</div>
+        <div class="da">
+          <svg width="150" height="150" viewBox="0 0 150 150" id="d_alloc_svg">
+            <circle cx="75" cy="75" r="55" fill="none" stroke="#f0f0ee" stroke-width="22"/>
+            <circle cx="75" cy="75" r="55" fill="none" stroke="#2E21DE" stroke-width="22" stroke-dasharray="207 138" stroke-dashoffset="0" transform="rotate(-90 75 75)" id="d_arc_eq"/>
+            <circle cx="75" cy="75" r="55" fill="none" stroke="#16a34a" stroke-width="22" stroke-dasharray="86 259" stroke-dashoffset="-207" transform="rotate(-90 75 75)" id="d_arc_fi"/>
+            <circle cx="75" cy="75" r="55" fill="none" stroke="#6366f1" stroke-width="22" stroke-dasharray="41 304" stroke-dashoffset="-293" transform="rotate(-90 75 75)" id="d_arc_da"/>
+            <circle cx="75" cy="75" r="55" fill="none" stroke="#f59e0b" stroke-width="22" stroke-dasharray="11 334" stroke-dashoffset="-334" transform="rotate(-90 75 75)" id="d_arc_co"/>
+          </svg>
+          <div class="al" id="d_allocation_list">
+            <div class="ar"><span class="an"><span class="adot" style="background:#2E21DE"></span>Equities</span><span class="ap">60%</span></div>
+            <div class="ar"><span class="an"><span class="adot" style="background:#16a34a"></span>Fixed Income</span><span class="ap">25%</span></div>
+            <div class="ar"><span class="an"><span class="adot" style="background:#6366f1"></span>Digital Assets</span><span class="ap">12%</span></div>
+            <div class="ar"><span class="an"><span class="adot" style="background:#f59e0b"></span>Commodities</span><span class="ap">3%</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="pp">
+      <div class="dpt">Open Positions</div>
+      <table class="ptb">
+        <thead><tr><th>Asset</th><th>Qty</th><th>Avg Cost</th><th>Last Price</th><th>Market Value</th><th>Day P&L</th><th>Total P&L</th><th>Return</th></tr></thead>
+        <tbody id="d_positions_tbody">
+          <tr><td colspan="8" style="text-align:center; color:rgba(0,0,0,.3)">No open positions.</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/gsap.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/ScrollTrigger.min.js"></script>
+<script>
+if (typeof gsap === "undefined") {
+  window.gsap = {
+    registerPlugin: () => {},
+    to: (target, vars) => {
+      if (typeof target === "string") {
+        document.querySelectorAll(target).forEach(el => {
+          if (vars.opacity !== undefined) el.style.opacity = vars.opacity;
+          if (vars.y !== undefined) el.style.transform = `translateY(${vars.y}px)`;
+        });
+      } else if (target) {
+        if (vars.opacity !== undefined) target.style.opacity = vars.opacity;
+        if (vars.y !== undefined) target.style.transform = `translateY(${vars.y}px)`;
+      }
+      if (vars && vars.onComplete) {
+        setTimeout(vars.onComplete, (vars.duration || 0) * 1000);
+      }
+    },
+    timeline: () => {
+      const mock = {
+        to: () => mock,
+        fromTo: () => mock
+      };
+      return mock;
+    },
+    fromTo: (target, fromVars, toVars) => {
+      if (toVars && toVars.onComplete) {
+        setTimeout(toVars.onComplete, (toVars.duration || 0) * 1000);
+      }
+    }
+  };
+}
+if (typeof ScrollTrigger === "undefined") {
+  window.ScrollTrigger = {
+    create: () => {}
+  };
+}
+gsap.registerPlugin(ScrollTrigger);
+
+/* ══ CURSOR ══ */
+const dot=document.getElementById('c-dot'),ring=document.getElementById('c-ring');
+let mx=0,my=0,rx=0,ry=0;
+document.addEventListener('mousemove',e=>{mx=e.clientX;my=e.clientY;dot.style.left=mx+'px';dot.style.top=my+'px'});
+(function rf(){rx+=(mx-rx)*.1;ry+=(my-ry)*.1;ring.style.left=rx+'px';ring.style.top=ry+'px';requestAnimationFrame(rf)})();
+document.querySelectorAll('a,button,.nav-a,.cc,.srv,.irow,.rgn,.tp').forEach(el=>{
+  el.addEventListener('mouseenter',()=>document.body.classList.add('hovering'));
+  el.addEventListener('mouseleave',()=>document.body.classList.remove('hovering'));
+});
+
+/* ══ LOADER ══ */
+(function(){
+  const chars=document.querySelectorAll('.ld-char');
+  const bar=document.getElementById('ldBar');
+  const num=document.getElementById('ldNum');
+  const loader=document.getElementById('loader');
+  // Animate chars in
+  chars.forEach((c,i)=>{
+    gsap.to(c,{y:0,duration:.7,delay:.05*i,ease:'power4.out'});
+  });
+  // Progress bar
+  let p=0;
+  const iv=setInterval(()=>{
+    p=Math.min(p+(Math.random()*10+5)|0,100);
+    bar.style.width=p+'%';
+    num.textContent=p+'%';
+    if(p>=100){
+      clearInterval(iv);
+      setTimeout(()=>{
+        gsap.to(loader,{opacity:0,duration:.6,ease:'power2.inOut',onComplete:()=>{
+          loader.style.display='none';
+          startHero();
+        }});
+      },300);
+    }
+  },70);
+})();
+
+/* ══ HERO SEQUENCE ══ */
+function startHero(){
+  const tl=gsap.timeline();
+  // tag line
+  tl.to('.hero-tag-line',{scaleX:1,duration:.7,ease:'power3.out'},0)
+    .to('.hero-tag-txt',{y:0,duration:.6,ease:'power3.out'},0.2)
+  // h1 lines stagger
+    .to('.row1 .h1-inner',{y:0,duration:.9,ease:'power4.out'},0.3)
+    .to('.row2 .h1-inner',{y:0,duration:.9,ease:'power4.out'},0.42)
+    .to('.row3 .h1-inner',{y:0,duration:.9,ease:'power4.out'},0.54)
+  // hero bottom
+    .to('.hero-bot',{opacity:1,y:0,duration:.8,ease:'power3.out'},0.8)
+    .to('.hero-scroll',{opacity:1,duration:.6,ease:'power3.out'},1.1);
+}
+
+/* ══ HERO CANVAS — interactive particle mesh ══ */
+(function(){
+  const cv=document.getElementById('hero-cv');
+  const ctx=cv.getContext('2d');
+  let W,H,pts=[],mouse={x:null,y:null};
+  function resize(){W=cv.width=cv.offsetWidth;H=cv.height=cv.offsetHeight;init()}
+  function init(){
+    pts=[];
+    const n=Math.floor(W*H/9000);
+    for(let i=0;i<n;i++)pts.push({x:Math.random()*W,y:Math.random()*H,vx:(Math.random()-.5)*.4,vy:(Math.random()-.5)*.4,r:Math.random()*1.2+.3,a:Math.random()*.4+.1});
+  }
+  cv.addEventListener('mousemove',e=>{const r=cv.getBoundingClientRect();mouse.x=e.clientX-r.left;mouse.y=e.clientY-r.top});
+  cv.addEventListener('mouseleave',()=>{mouse.x=mouse.y=null});
+  function draw(){
+    ctx.clearRect(0,0,W,H);
+    // bg
+    const g=ctx.createLinearGradient(0,0,W,H);
+    g.addColorStop(0,'#0B0F1A');g.addColorStop(1,'#070A12');
+    ctx.fillStyle=g;ctx.fillRect(0,0,W,H);
+    const g2=ctx.createRadialGradient(W*.72,H*.28,0,W*.72,H*.28,W*.45);
+    g2.addColorStop(0,'rgba(46,33,222,.12)');g2.addColorStop(1,'transparent');
+    ctx.fillStyle=g2;ctx.fillRect(0,0,W,H);
+    // update
+    pts.forEach(p=>{
+      if(mouse.x!==null){
+        const dx=p.x-mouse.x,dy=p.y-mouse.y,d=Math.sqrt(dx*dx+dy*dy);
+        if(d<150){p.vx+=dx/d*.1;p.vy+=dy/d*.1}
+      }
+      p.x+=p.vx;p.y+=p.vy;
+      p.vx*=.996;p.vy*=.996;
+      if(p.x<0)p.x=W;if(p.x>W)p.x=0;
+      if(p.y<0)p.y=H;if(p.y>H)p.y=0;
+    });
+    // edges
+    for(let i=0;i<pts.length;i++)for(let j=i+1;j<pts.length;j++){
+      const dx=pts[i].x-pts[j].x,dy=pts[i].y-pts[j].y,d=Math.sqrt(dx*dx+dy*dy);
+      if(d<130){ctx.beginPath();ctx.strokeStyle=`rgba(46,33,222,${.2*(1-d/130)})`;ctx.lineWidth=.7;ctx.moveTo(pts[i].x,pts[i].y);ctx.lineTo(pts[j].x,pts[j].y);ctx.stroke()}
+    }
+    // dots
+    pts.forEach(p=>{ctx.beginPath();ctx.arc(p.x,p.y,p.r,0,Math.PI*2);ctx.fillStyle=`rgba(255,255,255,${p.a})`;ctx.fill()});
+    requestAnimationFrame(draw);
+  }
+  resize();draw();
+  window.addEventListener('resize',resize,{passive:true});
+})();
+
+/* ══ NAV SCROLL ══ */
+ScrollTrigger.create({trigger:'body',start:'top -60',onToggle:s=>document.getElementById('nav').classList.toggle('scrolled',s.isActive)});
+
+/* ══ PARALLAX HERO ══ */
+gsap.to('.hero-in',{yPercent:30,ease:'none',scrollTrigger:{trigger:'#hero',start:'top top',end:'bottom top',scrub:true}});
+
+/* ══ SCROLL REVEAL ══ */
+document.querySelectorAll('.rv').forEach(el=>{
+  gsap.to(el,{
+    opacity:1,y:0,duration:.9,
+    ease:'power3.out',
+    scrollTrigger:{trigger:el,start:'top 88%',once:true},
+    delay:+(el.dataset.d||0)*.12
+  });
+});
+
+/* ══ BIG HEADING SPLIT-CHAR SCROLL ANIMATIONS ══ */
+function splitAndAnimate(selector,color){
+  const el=document.querySelector(selector);
+  if(!el)return;
+  const txt=el.innerText;
+  el.innerHTML='';
+  txt.split('\n').forEach((line,li)=>{
+    const row=document.createElement('span');
+    row.style.cssText='display:block;overflow:hidden';
+    line.split('').forEach(ch=>{
+      const c=document.createElement('span');
+      c.style.cssText='display:inline-block;transform:translateY(110%)';
+      c.textContent=ch==' '?'\u00A0':ch;
+      row.appendChild(c);
+    });
+    el.appendChild(row);
+    if(li<txt.split('\n').length-1)el.appendChild(document.createElement('br'));
+  });
+  const chars=el.querySelectorAll('span>span');
+  gsap.to(chars,{
+    y:0,duration:.9,ease:'power4.out',
+    stagger:.025,
+    scrollTrigger:{trigger:el,start:'top 85%',once:true}
+  });
+}
+setTimeout(()=>{
+  splitAndAnimate('#clH');
+  splitAndAnimate('#srvH');
+},200);
+
+/* ══ STATEMENT CHAR ANIMATION ══ */
+ScrollTrigger.create({
+  trigger:'#statement',start:'top 75%',once:true,
+  onEnter:()=>{
+    const el=document.getElementById('stmtTxt');
+    // word-by-word
+    const words=el.innerHTML.split(/(\s+|<br>|<em>.*?<\/em>)/);
+    // simpler: just fade+slide the whole block
+    gsap.fromTo(el,{opacity:0,y:40},{opacity:1,y:0,duration:1.1,ease:'power3.out'});
+    // ghost text
+    gsap.fromTo('.stmt-ghost',{x:-80,opacity:0},{x:0,opacity:1,duration:2,ease:'power3.out'});
+  }
+});
+
+/* ══ HORIZONTAL SCROLL STRIP DIRECTION CHANGE ══ */
+window.addEventListener('scroll',()=>{
+  const d=window.scrollY-lastScroll;
+  lastScroll=window.scrollY;
+  const tr=document.getElementById('stripTrack');
+  if(d<0)tr.style.animationDirection='reverse';
+  else tr.style.animationDirection='normal';
+},{passive:true});
+let lastScroll=0;
+
+/* ══ TECH CANVAS ══ */
+(function(){
+  const cv=document.getElementById('tc');
+  if(!cv)return;
+  const ctx=cv.getContext('2d');
+  let t=0,W,H;
+  function resize(){W=cv.width=cv.offsetWidth;H=cv.height=cv.offsetHeight}
+  resize();window.addEventListener('resize',resize,{passive:true});
+  const nodes=[{rx:.18,ry:.22,l:'RISK'},{rx:.55,ry:.15,l:'P&L'},{rx:.82,ry:.32,l:'MARGIN'},{rx:.28,ry:.62,l:'EXPOSURE'},{rx:.72,ry:.68,l:'VaR'},{rx:.48,ry:.82,l:'CLEARING'},{rx:.12,ry:.76,l:'ALPHA'}];
+  function draw(){
+    ctx.clearRect(0,0,W,H);
+    ctx.fillStyle='#0B0F1A';ctx.fillRect(0,0,W,H);
+    // grid
+    const gs=44,ox=(t*.5)%gs,oy=(t*.3)%gs;
+    ctx.strokeStyle='rgba(46,33,222,.06)';ctx.lineWidth=.5;
+    for(let x=-gs+ox;x<W+gs;x+=gs){ctx.beginPath();ctx.moveTo(x,0);ctx.lineTo(x,H);ctx.stroke()}
+    for(let y=-gs+oy;y<H+gs;y+=gs){ctx.beginPath();ctx.moveTo(0,y);ctx.lineTo(W,y);ctx.stroke()}
+    // compute
+    const ps=nodes.map((n,i)=>({x:n.rx*W,y:n.ry*H+Math.sin(t*.025+i*1.1)*12,l:n.l}));
+    // lines
+    for(let i=0;i<ps.length;i++)for(let j=i+1;j<ps.length;j++){
+      const dx=ps[i].x-ps[j].x,dy=ps[i].y-ps[j].y,d=Math.sqrt(dx*dx+dy*dy);
+      if(d<W*.5){ctx.beginPath();ctx.strokeStyle=`rgba(46,33,222,${.25*(1-d/(W*.5))})`;ctx.lineWidth=.8;ctx.moveTo(ps[i].x,ps[i].y);ctx.lineTo(ps[j].x,ps[j].y);ctx.stroke()}
+    }
+    // packet
+    const prog=(t*.5%100)/100;
+    const a=ps[0],b=ps[3];
+    ctx.beginPath();ctx.arc(a.x+(b.x-a.x)*prog,a.y+(b.y-a.y)*prog,3,0,Math.PI*2);
+    ctx.fillStyle='rgba(255,255,255,.9)';ctx.fill();
+    // nodes
+    ps.forEach((p,i)=>{
+      const pulse=(Math.sin(t*.04+i*1.4)+1)/2;
+      ctx.beginPath();ctx.arc(p.x,p.y,6+pulse*8,0,Math.PI*2);
+      ctx.fillStyle=`rgba(46,33,222,${.08+pulse*.1})`;ctx.fill();
+      ctx.beginPath();ctx.arc(p.x,p.y,3.5,0,Math.PI*2);
+      ctx.fillStyle='rgba(46,33,222,.95)';ctx.fill();
+      ctx.font='500 10px Inter';ctx.fillStyle='rgba(255,255,255,.35)';
+      ctx.fillText(p.l,p.x+8,p.y+4);
+    });
+    t++;requestAnimationFrame(draw);
+  }
+  draw();
+})();
+
+/* ══ GLOBE ══ */
+(function(){
+  const cv=document.getElementById('gc');
+  if(!cv)return;
+  const ctx=cv.getContext('2d');
+  let t=0,W,H,drag=false,rotY=0,rotX=-.15,lx=0,ly=0,vy=.003;
+  function resize(){W=cv.width=cv.offsetWidth;H=cv.height=cv.offsetHeight}
+  resize();window.addEventListener('resize',resize,{passive:true});
+  cv.addEventListener('mousedown',e=>{drag=true;lx=e.clientX;ly=e.clientY});
+  window.addEventListener('mouseup',()=>drag=false);
+  window.addEventListener('mousemove',e=>{
+    if(!drag)return;
+    vy=(e.clientX-lx)*.005;
+    rotY+=(e.clientX-lx)*.006;
+    rotX=Math.max(-.8,Math.min(.8,rotX+(e.clientY-ly)*.004));
+    lx=e.clientX;ly=e.clientY;
+  });
+  const cities=[{lat:40.7,lon:-74},{lat:51.5,lon:0},{lat:35.7,lon:139.7},{lat:22.3,lon:114.2},{lat:1.3,lon:103.8},{lat:-23.5,lon:-46.6},{lat:25.2,lon:55.3},{lat:48.8,lon:2.3},{lat:37.4,lon:-122},{lat:55.7,lon:37.6},{lat:28.6,lon:77.2},{lat:-33.9,lon:151.2}];
+  function proj(lat,lon,cx,cy,R){
+    const la=lat*Math.PI/180,lo=lon*Math.PI/180+rotY;
+    const cx1=Math.cos(rotX),sx1=Math.sin(rotX);
+    const x=R*Math.cos(la)*Math.sin(lo);
+    let y=R*Math.sin(la),z=R*Math.cos(la)*Math.cos(lo);
+    const ny=y*cx1-z*sx1,nz=y*sx1+z*cx1;
+    return{x:cx+x,y:cy+ny,z:nz};
+  }
+  function draw(){
+    ctx.clearRect(0,0,W,H);
+    if(!drag)rotY+=vy;
+    const cx=W/2,cy=H/2,R=Math.min(W,H)*.42;
+    // glow
+    const g=ctx.createRadialGradient(cx,cy,0,cx,cy,R);
+    g.addColorStop(0,'rgba(46,33,222,.1)');g.addColorStop(1,'transparent');
+    ctx.fillStyle=g;ctx.fillRect(0,0,W,H);
+    // circle
+    ctx.beginPath();ctx.arc(cx,cy,R,0,Math.PI*2);
+    ctx.strokeStyle='rgba(46,33,222,.4)';ctx.lineWidth=1;ctx.stroke();
+    // lat
+    [-60,-30,0,30,60].forEach(lat=>{
+      ctx.beginPath();let f=true;
+      for(let lon=0;lon<=360;lon+=2){
+        const p=proj(lat,lon,cx,cy,R);
+        if(p.z<0){f=true;continue}
+        f?ctx.moveTo(p.x,p.y):ctx.lineTo(p.x,p.y);f=false;
+      }
+      ctx.strokeStyle='rgba(46,33,222,.1)';ctx.lineWidth=.5;ctx.stroke();
+    });
+    // lon
+    for(let lon=0;lon<360;lon+=30){
+      ctx.beginPath();let f=true;
+      for(let lat=-90;lat<=90;lat+=2){
+        const p=proj(lat,lon,cx,cy,R);
+        if(p.z<0){f=true;continue}
+        f?ctx.moveTo(p.x,p.y):ctx.lineTo(p.x,p.y);f=false;
+      }
+      ctx.strokeStyle='rgba(46,33,222,.05)';ctx.lineWidth=.5;ctx.stroke();
+    }
+    // cities
+    const vis=cities.map(c=>({...c,p:proj(c.lat,c.lon,cx,cy,R)})).filter(c=>c.p.z>0);
+    for(let i=0;i<vis.length;i++)for(let j=i+1;j<vis.length;j++){
+      const a=vis[i].p,b=vis[j].p,dx=a.x-b.x,dy=a.y-b.y;
+      if(Math.sqrt(dx*dx+dy*dy)<R){ctx.beginPath();ctx.strokeStyle='rgba(46,33,222,.22)';ctx.lineWidth=.6;ctx.moveTo(a.x,a.y);ctx.lineTo(b.x,b.y);ctx.stroke()}
+    }
+    vis.forEach((c,i)=>{
+      const pulse=(Math.sin(t*.06+i*1.3)+1)/2;
+      ctx.beginPath();ctx.arc(c.p.x,c.p.y,3+pulse*5,0,Math.PI*2);
+      ctx.fillStyle=`rgba(46,33,222,${.08+pulse*.12})`;ctx.fill();
+      ctx.beginPath();ctx.arc(c.p.x,c.p.y,2.5,0,Math.PI*2);
+      ctx.fillStyle='#2E21DE';ctx.fill();
+    });
+    t++;requestAnimationFrame(draw);
+  }
+  draw();
+})();
+
+/* ══ API UTILS & STATE ══ */
+const API_BASE = "http://localhost:8000/api/v1";
+const WS_BASE = "ws://localhost:8000/api/v1";
+let livePriceWS = null;
+let livePortfolioWS = null;
+let isOfflineMode = false;
+
+// Mock database storage
+if (!localStorage.getItem("mock_users")) {
+  localStorage.setItem("mock_users", JSON.stringify([{
+    email: "admin@noblevest.com",
+    password: "Admin123!",
+    first_name: "NobleVest",
+    last_name: "Administrator",
+    client_type: "broker_dealer"
+  }]));
+}
+
+let mockCurrentUser = null;
+let mockPositions = [
+  { symbol: "AAPL", name: "Apple Inc.", asset_class: "equity", quantity: 150, avg_cost: 180.25, current_price: 189.45, prev_close: 188.30 },
+  { symbol: "NVDA", name: "NVIDIA Corporation", asset_class: "equity", quantity: 80, avg_cost: 795.50, current_price: 875.12, prev_close: 850.50 },
+  { symbol: "BTC", name: "Bitcoin USD", asset_class: "crypto", quantity: 1.25, avg_cost: 62000.00, current_price: 67500.00, prev_close: 68200.00 }
+];
+let mockCash = 1000000.00;
+
+// Clean fetch wrapper to handle authorization and automatic token refresh
+async function defAPI(endpoint, options = {}) {
+  if (isOfflineMode) {
+    return resolveOfflineAPI(endpoint, options);
+  }
+
+  let token = localStorage.getItem("access_token");
+  options.headers = options.headers || {};
+  if (token) {
+    options.headers["Authorization"] = `Bearer ${token}`;
+  }
+  if (options.body && !(options.body instanceof FormData) && typeof options.body === "object") {
+    options.headers["Content-Type"] = "application/json";
+    options.body = JSON.stringify(options.body);
+  }
+  options.credentials = "include"; // For refresh cookie
+
+  try {
+    let response = await fetch(`${API_BASE}${endpoint}`, options);
+
+    // Auto refresh token on 401
+    if (response.status === 401 && endpoint !== "/auth/login" && endpoint !== "/auth/refresh") {
+      try {
+        const refreshRes = await fetch(`${API_BASE}/auth/refresh`, {
+          method: "POST",
+          credentials: "include"
+        });
+        if (refreshRes.ok) {
+          const refreshData = await refreshRes.json();
+          localStorage.setItem("access_token", refreshData.access_token);
+          options.headers["Authorization"] = `Bearer ${refreshData.access_token}`;
+          response = await fetch(`${API_BASE}${endpoint}`, options);
+        } else {
+          localStorage.removeItem("access_token");
+          logoutUI();
+        }
+      } catch (e) {
+        console.error("Token refresh failed", e);
+      }
+    }
+    return response;
+  } catch (err) {
+    console.warn("Backend offline. Switching to client-side offline mock simulation mode.");
+    isOfflineMode = true;
+    return resolveOfflineAPI(endpoint, options);
+  }
+}
+
+// Client-side offline mock resolver
+function resolveOfflineAPI(endpoint, options = {}) {
+  let body = {};
+  if (options.body) {
+    body = typeof options.body === "string" ? JSON.parse(options.body) : options.body;
+  }
+  
+  const createResponse = (data, status = 200, ok = true) => {
+    return {
+      status,
+      ok,
+      json: async () => data
+    };
+  };
+
+  if (endpoint === "/auth/login") {
+    const users = JSON.parse(localStorage.getItem("mock_users"));
+    const match = users.find(u => u.email === body.email && u.password === body.password);
+    if (match) {
+      mockCurrentUser = match;
+      localStorage.setItem("access_token", "mock-token-12345");
+      return createResponse({ access_token: "mock-token-12345", user_id: "mock-uid" });
+    }
+    return createResponse({ detail: "Incorrect email or password" }, 400, false);
+  }
+
+  if (endpoint === "/auth/register") {
+    const users = JSON.parse(localStorage.getItem("mock_users"));
+    if (users.find(u => u.email === body.email)) {
+      return createResponse({ detail: "User with this email already exists" }, 400, false);
+    }
+    users.push(body);
+    localStorage.setItem("mock_users", JSON.stringify(users));
+    return createResponse(body, 201);
+  }
+
+  if (endpoint === "/auth/me") {
+    if (mockCurrentUser) {
+      return createResponse(mockCurrentUser);
+    }
+    const token = localStorage.getItem("access_token");
+    if (token) {
+      const users = JSON.parse(localStorage.getItem("mock_users"));
+      return createResponse(users[0]); // default to first user
+    }
+    return createResponse({ detail: "Not authenticated" }, 401, false);
+  }
+
+  if (endpoint === "/auth/logout") {
+    mockCurrentUser = null;
+    return createResponse({ detail: "Successfully logged out" });
+  }
+
+  if (endpoint === "/portfolio/") {
+    return createResponse(calculateLocalPortfolioOverview());
+  }
+
+  if (endpoint === "/portfolio/positions") {
+    return createResponse(calculateLocalPositions());
+  }
+
+  if (endpoint === "/portfolio/allocation") {
+    return createResponse(calculateLocalAllocations());
+  }
+
+  if (endpoint === "/portfolio/risk") {
+    return createResponse({
+      volatility_annualized: 0.145,
+      var_95: 45200.0,
+      sortino_ratio: 2.85,
+      sharpe_ratio: 2.14,
+      beta: 1.05
+    });
+  }
+
+  if (endpoint === "/contact/") {
+    return createResponse({ status: "submitted" }, 201);
+  }
+
+  return createResponse({ detail: "Not Found" }, 404, false);
+}
+
+function calculateLocalPositions() {
+  return mockPositions.map(pos => {
+    const market_value = pos.quantity * pos.current_price;
+    const unrealized_pnl = (pos.current_price - pos.avg_cost) * pos.quantity;
+    const unrealized_pnl_pct = pos.avg_cost > 0 ? ((pos.current_price - pos.avg_cost) / pos.avg_cost) * 100 : 0;
+    const day_pnl = (pos.current_price - pos.prev_close) * pos.quantity;
+    const day_pnl_pct = pos.prev_close > 0 ? ((pos.current_price - pos.prev_close) / pos.prev_close) * 100 : 0;
+    return {
+      ...pos,
+      market_value,
+      unrealized_pnl,
+      unrealized_pnl_pct,
+      day_pnl,
+      day_pnl_pct
+    };
+  });
+}
+
+function calculateLocalPortfolioOverview() {
+  const positions = calculateLocalPositions();
+  const total_positions_val = positions.reduce((acc, p) => acc + p.market_value, 0);
+  const total_value = total_positions_val + mockCash;
+  const unrealized_pnl = positions.reduce((acc, p) => acc + p.unrealized_pnl, 0);
+  const total_cost = positions.reduce((acc, p) => acc + (p.quantity * p.avg_cost), 0);
+  const unrealized_pnl_pct = total_cost > 0 ? (unrealized_pnl / total_cost) * 100 : 0;
+  const day_pnl = positions.reduce((acc, p) => acc + p.day_pnl, 0);
+  const prev_close_val = positions.reduce((acc, p) => acc + (p.quantity * p.prev_close), 0) + mockCash;
+  const day_pnl_pct = prev_close_val > 0 ? (day_pnl / prev_close_val) * 100 : 0;
+
+  return {
+    total_value,
+    cash_balance: mockCash,
+    unrealized_pnl,
+    unrealized_pnl_pct,
+    day_pnl,
+    day_pnl_pct
+  };
+}
+
+function calculateLocalAllocations() {
+  const positions = calculateLocalPositions();
+  const total_positions_val = positions.reduce((acc, p) => acc + p.market_value, 0);
+  const total_val = total_positions_val + mockCash;
+
+  const map = {};
+  positions.forEach(p => {
+    map[p.asset_class] = (map[p.asset_class] || 0) + p.market_value;
+  });
+  map["cash"] = mockCash;
+
+  return Object.keys(map).map(k => {
+    return {
+      asset_class: k,
+      value: map[k],
+      percentage: total_val > 0 ? (map[k] / total_val) * 100 : 0
+    };
+  });
+}
+
+/* ══ AUTH ══ */
+function openAuth(tab){document.getElementById('authM').classList.add('open');sw(tab)}
+function closeAuth(){document.getElementById('authM').classList.remove('open')}
+function sw(tab){
+  document.getElementById('fL').style.display=tab==='login'?'block':'none';
+  document.getElementById('fR').style.display=tab==='register'?'block':'none';
+  document.getElementById('tL').classList.toggle('on',tab==='login');
+  document.getElementById('tR').classList.toggle('on',tab==='register');
+  document.getElementById('mTit').textContent=tab==='login'?'Welcome back':'Create account';
+  document.getElementById('lErr').style.display='none';
+  document.getElementById('rErr').style.display='none';
+}
+document.getElementById('authM').addEventListener('click',function(e){if(e.target===this)closeAuth()});
+
+async function doLogin(){
+  const email = document.getElementById('lE').value;
+  const password = document.getElementById('lP').value;
+  const errEl = document.getElementById('lErr');
+  errEl.style.display = 'none';
+
+  if (!email || !password) {
+    errEl.textContent = "Please enter email and password.";
+    errEl.style.display = 'block';
+    return;
+  }
+
+  try {
+    const res = await defAPI("/auth/login", {
+      method: "POST",
+      body: { email, password }
+    });
+    if (!res.ok) {
+      const errData = await res.json();
+      errEl.textContent = errData.detail || "Authentication failed.";
+      errEl.style.display = 'block';
+      return;
+    }
+    const data = await res.json();
+    localStorage.setItem("access_token", data.access_token);
+    
+    // Get user details
+    const meRes = await defAPI("/auth/me");
+    if (meRes.ok) {
+      const user = await meRes.json();
+      openDash(`${user.first_name} ${user.last_name}`);
+    } else {
+      openDash("Investor");
+    }
+  } catch (e) {
+    errEl.textContent = "Server connection error.";
+    errEl.style.display = 'block';
+  }
+}
+
+async function doReg(){
+  const f = document.getElementById('rF').value;
+  const l = document.getElementById('rL').value;
+  const e = document.getElementById('rE').value;
+  const p = document.getElementById('rP').value;
+  const errEl = document.getElementById('rErr');
+  errEl.style.display = 'none';
+
+  if (!f || !l || !e || !p) {
+    errEl.textContent = 'Please fill all fields.';
+    errEl.style.display = 'block';
+    return;
+  }
+  if (p.length < 8) {
+    errEl.textContent = 'Password must be at least 8 characters.';
+    errEl.style.display = 'block';
+    return;
+  }
+
+  try {
+    const res = await defAPI("/auth/register", {
+      method: "POST",
+      body: {
+        email: e,
+        first_name: f,
+        last_name: l,
+        password: p,
+        client_type: "trader"
+      }
+    });
+    if (!res.ok) {
+      const errData = await res.json();
+      errEl.textContent = errData.detail || "Registration failed.";
+      errEl.style.display = 'block';
+      return;
+    }
+    
+    // Auto login
+    document.getElementById('lE').value = e;
+    document.getElementById('lP').value = p;
+    await doLogin();
+  } catch (err) {
+    errEl.textContent = "Server connection error.";
+    errEl.style.display = 'block';
+  }
+}
+
+async function openDash(name){
+  closeAuth();
+  document.getElementById('dNm').textContent = name;
+  document.getElementById('dGr').textContent = name.split(' ')[0];
+  document.getElementById('dAv').textContent = name[0].toUpperCase();
+  const d = document.getElementById('dash');
+  d.classList.add('open');
+  document.body.style.overflow = 'hidden';
+  
+  // animate in
+  gsap.fromTo(d, {opacity:0, y:20}, {opacity:1, y:0, duration:.5, ease:'power3.out'});
+
+  // Load static data
+  await loadDashboardData();
+
+  // Connect sockets / simulation loops
+  connectPortfolioWS();
+  connectPricesWS();
+}
+
+async function loadDashboardData() {
+  try {
+    // 1. Overview
+    const ovRes = await defAPI("/portfolio/");
+    if (ovRes.ok) {
+      updateOverviewUI(await ovRes.json());
+    }
+
+    // 2. Positions
+    const posRes = await defAPI("/portfolio/positions");
+    if (posRes.ok) {
+      updatePositionsUI(await posRes.json());
+    }
+
+    // 3. Allocations
+    const allocRes = await defAPI("/portfolio/allocation");
+    if (allocRes.ok) {
+      updateAllocationsUI(await allocRes.json());
+    }
+
+    // 4. Risk Metrics
+    const riskRes = await defAPI("/portfolio/risk");
+    if (riskRes.ok) {
+      updateRiskUI(await riskRes.json());
+    }
+  } catch (e) {
+    console.error("Error loading dashboard metrics", e);
+  }
+}
+
+function updateOverviewUI(data) {
+  document.getElementById("d_total_value").textContent = `$${parseFloat(data.total_value).toLocaleString(undefined, {minimumFractionDigits: 2})}`;
+  document.getElementById("d_cash_balance").textContent = `$${parseFloat(data.cash_balance).toLocaleString(undefined, {minimumFractionDigits: 2})}`;
+  document.getElementById("d_unrealized_pnl").textContent = `$${parseFloat(data.unrealized_pnl).toLocaleString(undefined, {minimumFractionDigits: 2})}`;
+  
+  const sign = data.day_pnl >= 0 ? "▲" : "▼";
+  const klass = data.day_pnl >= 0 ? "g" : "r";
+  
+  const pnlText = document.getElementById("d_day_pnl_text");
+  pnlText.textContent = `${sign} $${Math.abs(parseFloat(data.day_pnl)).toLocaleString(undefined, {minimumFractionDigits: 2})} today (${parseFloat(data.day_pnl_pct).toFixed(2)}%)`;
+  pnlText.className = `kc ${klass}`;
+
+  document.getElementById("d_day_pnl").textContent = `$${parseFloat(data.day_pnl).toLocaleString(undefined, {minimumFractionDigits: 2})}`;
+  
+  const pnlPct = document.getElementById("d_day_pnl_pct");
+  pnlPct.textContent = `${sign} ${parseFloat(data.day_pnl_pct).toFixed(2)}%`;
+  pnlPct.className = `kc ${klass}`;
+
+  const unPnlPct = document.getElementById("d_unrealized_pnl_pct");
+  unPnlPct.textContent = `${data.unrealized_pnl_pct >= 0 ? "▲" : "▼"} ${parseFloat(data.unrealized_pnl_pct).toFixed(1)}% since inception`;
+  unPnlPct.className = `kc ${data.unrealized_pnl_pct >= 0 ? "g" : "r"}`;
+}
+
+function updatePositionsUI(positions) {
+  const tbody = document.getElementById("d_positions_tbody");
+  if (!positions || positions.length === 0) {
+    tbody.innerHTML = `<tr><td colspan="8" style="text-align:center; color:rgba(0,0,0,.3)">No open positions.</td></tr>`;
+    return;
+  }
+  tbody.innerHTML = "";
+  positions.forEach(pos => {
+    const row = document.createElement("tr");
+    row.id = `pos_row_${pos.symbol}`;
+    row.innerHTML = `
+      <td><div class="ts">${pos.symbol}</div><div class="tc">${pos.name || pos.symbol}</div></td>
+      <td>${parseFloat(pos.quantity).toLocaleString()}</td>
+      <td>$${parseFloat(pos.avg_cost).toFixed(2)}</td>
+      <td class="last-price">$${parseFloat(pos.current_price).toFixed(2)}</td>
+      <td>$${parseFloat(pos.market_value).toLocaleString(undefined, {minimumFractionDigits:2, maximumFractionDigits:2})}</td>
+      <td class="pos-day-pnl ${pos.day_pnl >= 0 ? 'g' : 'r'}">${pos.day_pnl >= 0 ? '+' : ''}$${parseFloat(pos.day_pnl).toLocaleString(undefined, {minimumFractionDigits:2, maximumFractionDigits:2})}</td>
+      <td class="${pos.unrealized_pnl >= 0 ? 'g' : 'r'}">${pos.unrealized_pnl >= 0 ? '+' : ''}$${parseFloat(pos.unrealized_pnl).toLocaleString(undefined, {minimumFractionDigits:2, maximumFractionDigits:2})}</td>
+      <td class="${pos.unrealized_pnl_pct >= 0 ? 'g' : 'r'}">${pos.unrealized_pnl_pct >= 0 ? '+' : ''}${parseFloat(pos.unrealized_pnl_pct).toFixed(2)}%</td>
+    `;
+    tbody.appendChild(row);
+  });
+}
+
+function updateAllocationsUI(allocations) {
+  const list = document.getElementById("d_allocation_list");
+  list.innerHTML = "";
+  
+  const colors = {
+    "equity": "#2E21DE",
+    "fixed_income": "#16a34a",
+    "crypto": "#6366f1",
+    "commodity": "#f59e0b",
+    "fx": "#ec4899",
+    "cash": "#6b7280"
+  };
+
+  allocations.forEach(al => {
+    const color = colors[al.asset_class] || "#3b82f6";
+    const row = document.createElement("div");
+    row.className = "ar";
+    row.innerHTML = `
+      <span class="an"><span class="adot" style="background:${color}"></span>${al.asset_class.replace('_', ' ').toUpperCase()}</span>
+      <span class="ap">${parseFloat(al.percentage).toFixed(1)}%</span>
+    `;
+    list.appendChild(row);
+  });
+}
+
+function updateRiskUI(risk) {
+  document.getElementById("d_vol").textContent = `${parseFloat(risk.volatility_annualized * 100).toFixed(2)}%`;
+  document.getElementById("d_var").textContent = `$${parseFloat(risk.var_95).toLocaleString(undefined, {maximumFractionDigits: 0})}`;
+  document.getElementById("d_sortino").textContent = parseFloat(risk.sortino_ratio).toFixed(2);
+  document.getElementById("d_sharpe").textContent = parseFloat(risk.sharpe_ratio).toFixed(2);
+  document.getElementById("d_beta").textContent = parseFloat(risk.beta).toFixed(2);
+}
+
+/* ══ WEBSOCKET CONNECTORS & OFFLINE SIMULATORS ══ */
+let offlinePriceInterval = null;
+let offlinePortfolioInterval = null;
+
+function connectPortfolioWS() {
+  if (isOfflineMode) {
+    if (offlinePortfolioInterval) clearInterval(offlinePortfolioInterval);
+    offlinePortfolioInterval = setInterval(() => {
+      updateOverviewUI(calculateLocalPortfolioOverview());
+    }, 2000);
+    return;
+  }
+
+  if (livePortfolioWS) livePortfolioWS.close();
+
+  const token = localStorage.getItem("access_token");
+  livePortfolioWS = new WebSocket(`${WS_BASE}/portfolio/ws?token=${token}`);
+
+  livePortfolioWS.onmessage = function(event) {
+    const data = JSON.parse(event.data);
+    updateOverviewUI(data);
+  };
+
+  livePortfolioWS.onclose = function() {
+    console.log("Portfolio socket closed, retrying in 5 seconds...");
+    setTimeout(() => {
+      if (document.getElementById("dash").classList.contains("open")) connectPortfolioWS();
+    }, 5000);
+  };
+}
+
+function connectPricesWS() {
+  if (isOfflineMode) {
+    if (offlinePriceInterval) clearInterval(offlinePriceInterval);
+    offlinePriceInterval = setInterval(() => {
+      mockPositions.forEach(pos => {
+        // Random Gauss walk simulation
+        const change_pct = (Math.random() - 0.5) * 0.004;
+        pos.current_price = pos.current_price * (1 + change_pct);
+        
+        // Update positions row price directly
+        const row = document.getElementById(`pos_row_${pos.symbol}`);
+        if (row) {
+          const priceEl = row.querySelector(".last-price");
+          if (priceEl) {
+            priceEl.textContent = `$${parseFloat(pos.current_price).toFixed(2)}`;
+          }
+        }
+      });
+      // Refresh positions table to update dynamic totals
+      updatePositionsUI(calculateLocalPositions());
+    }, 1000);
+    return;
+  }
+
+  if (livePriceWS) livePriceWS.close();
+
+  livePriceWS = new WebSocket(`${WS_BASE}/market/ws/prices`);
+
+  livePriceWS.onopen = function() {
+    livePriceWS.send(JSON.stringify({
+      "subscribe": ["AAPL", "NVDA", "TSLA", "MSFT", "BTC", "ETH", "GOLD"]
+    }));
+  };
+
+  livePriceWS.onmessage = function(event) {
+    const data = JSON.parse(event.data);
+    const row = document.getElementById(`pos_row_${data.symbol}`);
+    if (row) {
+      const priceEl = row.querySelector(".last-price");
+      if (priceEl) {
+        priceEl.textContent = `$${parseFloat(data.price).toFixed(2)}`;
+        gsap.fromTo(priceEl, {color: "#2E21DE"}, {color: "", duration: 0.5});
+      }
+    }
+  };
+
+  livePriceWS.onclose = function() {
+    console.log("Prices WS closed, retrying...");
+    setTimeout(connectPricesWS, 5000);
+  };
+}
+
+async function logout(){
+  await defAPI("/auth/logout", { method: "POST" });
+  localStorage.removeItem("access_token");
+  logoutUI();
+}
+
+function logoutUI() {
+  if (livePriceWS) livePriceWS.close();
+  if (livePortfolioWS) livePortfolioWS.close();
+  if (offlinePriceInterval) clearInterval(offlinePriceInterval);
+  if (offlinePortfolioInterval) clearInterval(offlinePortfolioInterval);
+
+  gsap.to(document.getElementById('dash'), {opacity:0, y:20, duration:.4, ease:'power2.in', onComplete:()=>{
+    document.getElementById('dash').classList.remove('open');
+    document.body.style.overflow = '';
+  }});
+}
+
+/* ══ CONTACT ══ */
+function go(id){document.getElementById(id)?.scrollIntoView({behavior:'smooth'})}
+
+async function submitCt(e){
+  e.preventDefault();
+  const first_name = document.getElementById("c_fname").value;
+  const last_name = document.getElementById("c_lname").value;
+  const email = document.getElementById("c_email").value;
+  const company = document.getElementById("c_company").value;
+  const client_type = document.getElementById("c_type").value;
+  const message = document.getElementById("c_msg").value;
+  const okEl = document.getElementById('cfok');
+
+  try {
+    const res = await defAPI("/contact/", {
+      method: "POST",
+      body: { first_name, last_name, email, company, client_type, message }
+    });
+    if (res.ok) {
+      okEl.textContent = "✓ Message received. Our team will be in touch within 24 hours.";
+      okEl.style.display = 'block';
+      e.target.reset();
+      setTimeout(() => okEl.style.display = 'none', 5000);
+    } else {
+      okEl.textContent = "Error sending message. Rate limit exceeded or invalid data.";
+      okEl.style.display = 'block';
+      setTimeout(() => okEl.style.display = 'none', 5000);
+    }
+  } catch (err) {
+    okEl.textContent = "Failed to connect to the server.";
+    okEl.style.display = 'block';
+    setTimeout(() => okEl.style.display = 'none', 5000);
+  }
+}
+
+// Check session on page load
+window.addEventListener("DOMContentLoaded", async () => {
+  const token = localStorage.getItem("access_token");
+  if (token) {
+    const meRes = await defAPI("/auth/me");
+    if (meRes.ok) {
+      const user = await meRes.json();
+      openDash(`${user.first_name} ${user.last_name}`);
+    } else {
+      localStorage.removeItem("access_token");
+    }
+  }
+});
+</script>
+</body>
+</html>
